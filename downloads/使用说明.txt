@@ -1,0 +1,49 @@
+═══════════════════════════════════════════════════════════════
+  游戏 Mod AI 翻译器 (GameModTranslator) v1.0 — 使用说明
+═══════════════════════════════════════════════════════════════
+
+【这是什么】
+用 AI 批量翻译游戏 Mod 文本文件的桌面软件。支持任意
+OpenAI 兼容接口：DeepSeek / OpenAI / Kimi / 通义 / 本地 Ollama。
+
+【快速开始】(3 步)
+1. 填写 API 设置：
+   接口地址  https://api.deepseek.com   (DeepSeek 默认)
+   API Key   你的密钥
+   模型      deepseek-chat  (或 gpt-4o-mini / qwen-plus 等)
+   点「测试连接」确认可用
+2. 选择 Mod 文件夹 → 点「扫描」，勾选要翻译的文件
+3. 点「▶ 开始翻译」，完成后到输出文件夹取译文
+
+【支持的格式】
+JSON(群星/我的世界) YAML XML(环世界) Paradox YML(十字军之王3/维多利亚3)
+CSV(城市天际线) INI/properties TXT/strings/lang
+
+【安全特性】
+· {0}、%s、$KEY$、§R..§!、<b>、[Root.X] 等格式码翻译后原样保留
+· 译文自动缓存(cache.json)，重复翻译不重复扣费
+· 推荐「输出到文件夹」模式；「覆盖原文件」模式会自动备份 .bak
+· 原文件编码(UTF-8/BOM/UTF-16/GBK)与缩进风格保持不变
+
+【本地模型(免费离线)】
+接口地址填本地服务地址, API Key 随便填, 模型名填本地模型名:
+  Ollama      http://localhost:11434/v1   模型如 qwen2.5:7b (先 ollama pull)
+  LM Studio   http://localhost:1234/v1
+  vLLM        http://localhost:8000/v1
+  llama.cpp   http://localhost:8080/v1
+建议用 7B 以上模型, 小模型丢占位符时软件会自动重试并警告。
+
+【命令行模式】(高级用户)
+  GameModTranslator.exe --cli --input <Mod文件夹> --output <输出>
+      --api-key sk-xxx --model deepseek-chat --lang 简体中文
+  GameModTranslator.exe --cli --input <Mod文件夹> --list   # 仅扫描
+
+【常见问题】
+· 首次启动较慢：单文件版启动时需解压(约2-5秒)，属正常现象
+· 杀毒软件误报：未签名程序可能被拦截，添加信任即可
+· 本目录下 dist\GameModTranslator\ 为便携目录版，若单文件版
+  在你的电脑上被拦截无法运行，可改用目录版(双击其中 exe)
+· 配置(config.json)与缓存(cache.json)保存在程序同目录
+
+完整文档见 README.md
+═══════════════════════════════════════════════════════════════
