@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>游戏 Mod AI 翻译器 - 官网</title>
+<meta name="description" content="游戏 Mod AI 翻译器：用 AI 批量翻译游戏 Mod 文本，支持 JSON/YAML/XML/CSV/INI/TXT 等格式，占位符原样保留，支持 DeepSeek/OpenAI/本地 Ollama 模型。">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<style>
+:root {
+  --bg: #0b0d16;
+  --bg2: #11142a;
+  --card: #151a33;
+  --card2: #1a1f3d;
+  --line: #262c52;
+  --text: #e8eaf6;
+  --muted: #9aa3c7;
+  --indigo: #6366f1;
+  --violet: #8b5cf6;
+  --cyan: #22d3ee;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --red: #f87171;
+  --grad: linear-gradient(135deg, #6366f1 0%, #8b5cf6 55%, #a855f7 100%);
+  --grad-soft: linear-gradient(135deg, rgba(99,102,241,.16), rgba(139,92,246,.10));
+  --radius: 14px;
+  --shadow: 0 10px 40px rgba(0,0,0,.45);
+  --font: "Segoe UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --mono: Consolas, "Cascadia Mono", monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.65; overflow-x: hidden; }
+::selection { background: rgba(139,92,246,.4); }
+a { color: inherit; text-decoration: none; }
+.container { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
+h2 { font-size: 30px; font-weight: 700; letter-spacing: .5px; }
+.sec-sub { color: var(--muted); margin: 10px 0 34px; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid var(--line); background: var(--card2); color: var(--muted); }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 999px; font-size: 15px; font-weight: 600; transition: transform .15s, box-shadow .2s, background .2s; border: none; cursor: pointer; }
+.btn:hover { transform: translateY(-2px); }
+.btn-primary { background: var(--grad); color: #fff; box-shadow: 0 8px 24px rgba(124,92,246,.4); }
+.btn-primary:hover { box-shadow: 0 12px 32px rgba(124,92,246,.55); }
+.btn-ghost { background: rgba(255,255,255,.06); color: var(--text); border: 1px solid var(--line); }
+.btn-ghost:hover { background: rgba(255,255,255,.11); }
+.btn-sm { padding: 8px 16px; font-size: 13px; }
+
+/* ---------- 顶部导航 ---------- */
+nav { position: sticky; top: 0; z-index: 100; background: rgba(11,13,22,.82); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; }
+.logo-ic { width: 30px; height: 30px; border-radius: 8px; background: var(--grad); display: grid; place-items: center; font-size: 15px; }
+.nav-links { display: flex; gap: 26px; font-size: 14px; color: var(--muted); }
+.nav-links a:hover { color: var(--text); }
+.nav-cta { display: flex; align-items: center; gap: 14px; }
+#navToggle { display: none; background: none; border: 1px solid var(--line); color: var(--text); border-radius: 8px; padding: 6px 10px; font-size: 18px; cursor: pointer; }
+@media (max-width: 900px) {
+  .nav-links { display: none; position: absolute; top: 60px; left: 0; right: 0; flex-direction: column; background: var(--bg2); padding: 16px 22px; border-bottom: 1px solid var(--line); gap: 14px; }
+  .nav-links.open { display: flex; }
+  #navToggle { display: block; }
+  h2 { font-size: 24px; }
+}
+
+/* ---------- Hero ---------- */
+.hero { position: relative; padding: 70px 0 90px; overflow: hidden; }
+.hero::before { content: ""; position: absolute; inset: 0; background: radial-gradient(900px 480px at 70% -10%, rgba(124,92,246,.28), transparent 60%), radial-gradient(700px 420px at 10% 110%, rgba(34,211,238,.12), transparent 60%); pointer-events: none; }
+.hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; position: relative; }
+.hero h1 { font-size: 44px; line-height: 1.25; font-weight: 800; letter-spacing: .5px; }
+.hero h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero .tagline { color: var(--muted); font-size: 17px; margin: 18px 0 8px; }
+.hero .tags { margin: 18px 0 28px; display: flex; flex-wrap: wrap; gap: 8px; }
+.hero .tags .badge { font-size: 13px; padding: 4px 12px; }
+.hero-btns { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.hero-meta { margin-top: 20px; color: var(--muted); font-size: 13px; }
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 32px; }
+  .hero { padding: 44px 0 56px; }
+}
+
+/* 应用窗口 CSS 预览 */
+.window { background: #0f1326; border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; }
+.win-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: #131730; }
+.win-dot { width: 11px; height: 11px; border-radius: 50%; }
+.win-dot.r { background: #f87171; } .win-dot.y { background: #fbbf24; } .win-dot.g { background: #34d399; }
+.win-title { margin-left: 10px; font-size: 12px; color: var(--muted); }
+.win-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.win-row { display: flex; gap: 8px; align-items: center; font-size: 11.5px; color: var(--muted); }
+.win-label { width: 74px; text-align: right; flex-shrink: 0; }
+.win-field { flex: 1; background: #0b0e1d; border: 1px solid var(--line); border-radius: 6px; height: 26px; padding: 0 10px; display: flex; align-items: center; color: var(--text); font-size: 11px; overflow: hidden; white-space: nowrap; }
+.win-field.url { color: var(--cyan); }
+.win-field.key { color: #94a3b8; letter-spacing: 2px; }
+.win-btn { background: var(--grad); color: #fff; border: none; border-radius: 6px; padding: 4px 12px; font-size: 11px; font-weight: 600; cursor: pointer; }
+.win-list { background: #0b0e1d; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 11.5px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
+.win-file { display: flex; justify-content: space-between; align-items: center; }
+.win-file .ck { color: var(--green); margin-right: 6px; }
+.win-file .n { color: #d4d9f0; }
+.win-file .cnt { background: var(--card2); border-radius: 4px; padding: 0 6px; font-size: 10px; color: var(--muted); }
+.win-prog { height: 8px; background: #0b0e1d; border: 1px solid var(--line); border-radius: 99px; overflow: hidden; }
+.win-prog i { display: block; height: 100%; width: 64%; background: var(--grad); border-radius: 99px; animation: pulse 2.4s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { width: 58%; } 50% { width: 74%; } }
+.win-status { font-size: 11px; color: var(--green); display: flex; justify-content: space-between; }
+
+/* ---------- 通用 section ---------- */
+section { padding: 66px 0; }
+section:nth-of-type(even) { background: var(--bg2); }
+.sec-head { text-align: center; max-width: 680px; margin: 0 auto; }
+
+/* ---------- 特性卡片 ---------- */
+.features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.f-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; transition: transform .2s, border-color .2s; }
+.f-card:hover { transform: translateY(-4px); border-color: rgba(139,92,246,.5); }
+.f-ic { width: 40px; height: 40px; border-radius: 10px; background: var(--grad-soft); border: 1px solid var(--line); display: grid; place-items: center; font-size: 19px; margin-bottom: 12px; }
+.f-card h3 { font-size: 15.5px; margin-bottom: 6px; }
+.f-card p { color: var(--muted); font-size: 13px; }
+.f-card code { font-family: var(--mono); font-size: 12px; color: var(--cyan); background: rgba(34,211,238,.08); padding: 1px 5px; border-radius: 4px; }
+@media (max-width: 1000px) { .features { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .features { grid-template-columns: 1fr; } }
+
+/* ---------- 格式表 ---------- */
+.fmt-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.fmt-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; display: flex; align-items: center; gap: 14px; }
+.fmt-ext { font-family: var(--mono); font-weight: 700; color: #fff; background: var(--grad); border-radius: 8px; padding: 8px 12px; font-size: 13px; flex-shrink: 0; }
+.fmt-card b { font-size: 14px; display: block; }
+.fmt-card span { color: var(--muted); font-size: 12.5px; }
+
+/* ---------- 步骤 ---------- */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.step { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 20px 20px; }
+.step .no { position: absolute; top: -16px; left: 20px; width: 34px; height: 34px; border-radius: 50%; background: var(--grad); display: grid; place-items: center; font-weight: 800; font-size: 15px; box-shadow: 0 4px 14px rgba(124,92,246,.4); }
+.step h3 { font-size: 16px; margin-bottom: 8px; margin-top: 8px; }
+.step p { color: var(--muted); font-size: 13.5px; }
+.step code { font-family: var(--mono); font-size: 12px; background: #0b0e1d; border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; color: var(--cyan); }
+@media (max-width: 900px) { .steps { grid-template-columns: 1fr; } }
+
+/* ---------- 代码块 ---------- */
+.cmd-block { position: relative; background: #0b0e1d; border: 1px solid var(--line); border-radius: 10px; padding: 14px 44px 14px 16px; font-family: var(--mono); font-size: 12.5px; color: #c7d2fe; overflow-x: auto; white-space: pre; margin: 12px 0; }
+.copy-btn { position: absolute; top: 10px; right: 10px; background: var(--card2); color: var(--muted); border: 1px solid var(--line); border-radius: 6px; font-size: 11px; padding: 3px 9px; cursor: pointer; }
+.copy-btn:hover { color: var(--text); }
+.copy-btn.ok { color: var(--green); border-color: var(--green); }
+
+/* ---------- API / 本地模型 ---------- */
+.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.tbl th, .tbl td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); }
+.tbl th { background: var(--card2); color: var(--muted); font-weight: 600; font-size: 12.5px; }
+.tbl td code { font-family: var(--mono); font-size: 12px; color: var(--cyan); background: rgba(34,211,238,.08); padding: 1px 6px; border-radius: 4px; }
+.tbl tr:last-child td { border-bottom: none; }
+.note { background: rgba(251,191,36,.07); border: 1px solid rgba(251,191,36,.3); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #fde68a; margin-top: 14px; }
+.note b { color: var(--amber); }
+
+/* ---------- 下载 ---------- */
+.dl-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+.dl-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; position: relative; display: flex; flex-direction: column; gap: 10px; transition: transform .2s, border-color .2s; }
+.dl-card:hover { transform: translateY(-4px); border-color: rgba(139,92,246,.55); }
+.dl-card .hot { position: absolute; top: -11px; right: 18px; background: var(--grad); color: #fff; font-size: 11.5px; font-weight: 700; padding: 3px 12px; border-radius: 999px; }
+.dl-card h3 { font-size: 17px; }
+.dl-card .desc { color: var(--muted); font-size: 13px; flex: 1; }
+.dl-card .meta { font-size: 12px; color: var(--muted); display: flex; gap: 14px; flex-wrap: wrap; }
+.dl-card .sha { font-family: var(--mono); font-size: 10.5px; color: #6b7296; word-break: break-all; }
+.dl-card .btn { align-self: flex-start; }
+@media (max-width: 720px) { .dl-cards { grid-template-columns: 1fr; } }
+
+/* ---------- FAQ ---------- */
+.faq-item { background: var(--card); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+.faq-q { width: 100%; text-align: left; background: none; border: none; color: var(--text); font-size: 14.5px; font-weight: 600; padding: 16px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; font-family: var(--font); }
+.faq-q .ar { transition: transform .25s; color: var(--muted); font-size: 13px; flex-shrink: 0; }
+.faq-item.open .ar { transform: rotate(180deg); }
+.faq-a { display: none; padding: 0 18px 16px; color: var(--muted); font-size: 13.5px; }
+.faq-item.open .faq-a { display: block; }
+.faq-a code { font-family: var(--mono); font-size: 12px; color: var(--cyan); background: rgba(34,211,238,.08); padding: 1px 5px; border-radius: 4px; }
+
+/* ---------- 更新日志 ---------- */
+.cl { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px; max-width: 720px; margin: 0 auto; }
+.cl h3 { display: flex; align-items: center; gap: 10px; font-size: 16px; margin-bottom: 4px; }
+.cl .date { color: var(--muted); font-size: 12.5px; margin-bottom: 14px; }
+.cl ul { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; color: var(--muted); }
+.cl li::before { content: "▸"; color: var(--violet); margin-right: 8px; }
+
+/* ---------- 支持我们 ---------- */
+.support-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.sp-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: transform .2s, border-color .2s; }
+.sp-card:hover { transform: translateY(-3px); border-color: rgba(139,92,246,.5); }
+.sp-ic { font-size: 32px; }
+.sp-card h3 { font-size: 16px; }
+.sp-card p { color: var(--muted); font-size: 13px; flex: 1; }
+.sp-pending { color: var(--muted); font-size: 12.5px; border: 1px dashed var(--line); border-radius: 999px; padding: 6px 16px; }
+.qr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 18px; }
+.qr-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; text-align: center; min-height: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+.qr-card img { width: 170px; height: 170px; border-radius: 10px; border: 1px solid var(--line); }
+.qr-card b { font-size: 14.5px; }
+.qr-card .hint { color: var(--muted); font-size: 12px; }
+.qr-ph { color: var(--muted); font-size: 12.5px; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 10px 0; }
+.qr-ph .ph-ic { font-size: 34px; opacity: .7; }
+.qr-ph b { color: var(--text); font-size: 14.5px; }
+.support-free { margin-top: 22px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; }
+.support-free h3 { font-size: 15px; margin-bottom: 12px; }
+.free-items { display: flex; flex-wrap: wrap; gap: 10px; }
+.free-chip { background: var(--card2); border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; font-size: 13px; color: var(--muted); }
+
+/* ---------- 页脚 ---------- */
+footer { border-top: 1px solid var(--line); padding: 34px 0 40px; color: var(--muted); font-size: 13px; background: var(--bg2); }
+.foot-grid { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.foot-grid b { color: var(--text); display: block; margin-bottom: 8px; }
+.foot-grid a:hover { color: var(--text); }
+.foot-note { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 12px; color: #6b7296; }
+
+/* 回到顶部 */
+#toTop { position: fixed; right: 22px; bottom: 22px; width: 42px; height: 42px; border-radius: 50%; background: var(--card2); border: 1px solid var(--line); color: var(--text); font-size: 18px; cursor: pointer; display: none; place-items: center; box-shadow: var(--shadow); z-index: 90; }
+#toTop.show { display: grid; }
+</style>
+</head>
+<body>
+
+<!-- ================= 导航 ================= -->
+<nav>
+  <div class="container nav-inner">
+    <a class="logo" href="#top"><span class="logo-ic">译</span>游戏 Mod AI 翻译器</a>
+    <div class="nav-links" id="navLinks">
+      <a href="#features">功能特性</a>
+      <a href="#formats">支持格式</a>
+      <a href="#guide">快速开始</a>
+      <a href="#download">下载</a>
+      <a href="#support">支持我们</a>
+      <a href="#faq">常见问题</a>
+      <a href="#changelog">更新日志</a>
+    </div>
+    <div class="nav-cta">
+      <a class="btn btn-primary btn-sm" href="#download">立即下载</a>
+      <button id="navToggle" aria-label="菜单">☰</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= Hero ================= -->
+<header class="hero" id="top">
+  <div class="container hero-grid">
+    <div>
+      <span class="badge" style="margin-bottom:16px">v1.0 · Windows 10/11 · 免费</span>
+      <h1>把任何游戏的 <span class="grad">Mod 文本</span><br>批量翻译成你的语言</h1>
+      <p class="tagline">AI 驱动的游戏 Mod 翻译工具 —— 兼容 DeepSeek / OpenAI / 本地 Ollama，<br>格式码原样保留，结构一字不差，中文界面一键上手。</p>
+      <div class="tags">
+        <span class="badge">⚡ 并发批量翻译</span>
+        <span class="badge">🛡 占位符保护</span>
+        <span class="badge">🗂 7 种格式</span>
+        <span class="badge">💾 翻译缓存</span>
+        <span class="badge">🖥 本地模型</span>
+      </div>
+      <div class="hero-btns">
+        <a class="btn btn-primary" href="downloads/GameModTranslator-Setup-1.0.exe" download>⬇ 下载安装程序 <small style="font-weight:400">10.6 MB</small></a>
+        <a class="btn btn-ghost" href="downloads/GameModTranslator.exe" download>便携版 11.9 MB</a>
+      </div>
+      <p class="hero-meta">安装包含中文向导 · 绿色便携版免安装 · 均带 SHA256 校验（见下载区）</p>
+    </div>
+
+    <!-- CSS 应用窗口预览 -->
+    <div class="window">
+      <div class="win-bar">
+        <span class="win-dot r"></span><span class="win-dot y"></span><span class="win-dot g"></span>
+        <span class="win-title">游戏 Mod AI 翻译器</span>
+      </div>
+      <div class="win-body">
+        <div class="win-row"><span class="win-label">接口地址</span><span class="win-field url">https://api.deepseek.com</span><span class="win-btn">测试连接</span></div>
+        <div class="win-row"><span class="win-label">API Key</span><span class="win-field key">sk-••••••••••••••••</span></div>
+        <div class="win-row"><span class="win-label">模型</span><span class="win-field">deepseek-chat</span><span class="win-label" style="width:auto;margin-left:6px">目标语言</span><span class="win-field" style="flex:0 0 96px">简体中文</span></div>
+        <div class="win-row"><span class="win-label">Mod 文件夹</span><span class="win-field">D:\Steam\workshop\content\294100\... </span><span class="win-btn" style="background:transparent;border:1px solid var(--line)">浏览…</span></div>
+        <div class="win-list">
+          <div class="win-file"><span><span class="ck">☑</span><span class="n">localisation/example_l_english.yml</span></span><span class="cnt">2 条</span></div>
+          <div class="win-file"><span><span class="ck">☑</span><span class="n">defs/example_defs.xml</span></span><span class="cnt">3 条</span></div>
+          <div class="win-file"><span><span class="ck">☑</span><span class="n">data/strings.json</span></span><span class="cnt">4 条</span></div>
+          <div class="win-file"><span><span class="ck">☑</span><span class="n">misc/settings.ini</span></span><span class="cnt">2 条</span></div>
+        </div>
+        <div class="win-row"><span class="win-btn">▶ 开始翻译</span><span class="win-btn" style="background:transparent;border:1px solid var(--line)">■ 停止</span></div>
+        <div class="win-prog"><i></i></div>
+        <div class="win-status"><span>17 / 17 条文本 (失败 0)</span><span>✔ 已完成</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 功能特性 ================= -->
+<section id="features">
+  <div class="container">
+    <div class="sec-head">
+      <h2>功能特性</h2>
+      <p class="sec-sub">为游戏 Mod 本地化场景精心设计，专治"翻译完游戏就报错"</p>
+    </div>
+    <div class="features">
+      <div class="f-card"><div class="f-ic">⚡</div><h3>并发批量翻译</h3><p>1~16 并发可调，429/5xx 自动指数退避重试，大 Mod 几千条文本也能快速完成。</p></div>
+      <div class="f-card"><div class="f-ic">🛡</div><h3>占位符保护</h3><p><code>{0}</code> <code>%s</code> <code>$KEY$</code> <code>§R..§!</code> <code>&lt;b&gt;</code> <code>[Root.X]</code> 等格式码翻译后原样保留；丢失时自动重试。</p></div>
+      <div class="f-card"><div class="f-ic">🗂</div><h3>7 种格式支持</h3><p>JSON / YAML / XML / CSV / INI / Paradox YML / TXT，覆盖绝大多数主流游戏 Mod。</p></div>
+      <div class="f-card"><div class="f-ic">💾</div><h3>翻译缓存</h3><p>相同文本只翻译一次，结果存于 cache.json，重复运行、更新 Mod 不重复扣费。</p></div>
+      <div class="f-card"><div class="f-ic">🖥</div><h3>本地模型</h3><p>支持 Ollama / LM Studio / vLLM 等本地服务，免费离线翻译，数据不出电脑。</p></div>
+      <div class="f-card"><div class="f-ic">🧬</div><h3>结构保留</h3><p>原文件编码（UTF-8 / BOM / UTF-16 / GBK）、缩进风格、注释位置保持不变。</p></div>
+      <div class="f-card"><div class="f-ic">🔒</div><h3>安全输出</h3><p>默认输出到新文件夹；覆盖原文件模式自动备份 .bak，随时可回退。</p></div>
+      <div class="f-card"><div class="f-ic">🌐</div><h3>全兼容 API</h3><p>任意 OpenAI 兼容接口：DeepSeek、OpenAI、Kimi、通义、智谱、本地 Ollama 通吃。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 支持格式 ================= -->
+<section id="formats">
+  <div class="container">
+    <div class="sec-head">
+      <h2>支持的格式与游戏</h2>
+      <p class="sec-sub">按文件格式自动识别，未知扩展名按纯文本处理，二进制与超大文件自动跳过</p>
+    </div>
+    <div class="fmt-wrap">
+      <div class="fmt-card"><span class="fmt-ext">.json</span><div><b>JSON</b><span>群星 Stellaris · 我的世界 · 戴森球计划</span></div></div>
+      <div class="fmt-card"><span class="fmt-ext">.xml</span><div><b>XML / Defs</b><span>环世界 RimWorld · 泰拉瑞亚</span></div></div>
+      <div class="fmt-card"><span class="fmt-ext">.yml</span><div><b>Paradox YML</b><span>十字军之王3 · 维多利亚3 · 欧陆风云4</span></div></div>
+      <div class="fmt-card"><span class="fmt-ext">.yaml</span><div><b>YAML</b><span>博德之门3 · 泰拉瑞亚</span></div></div>
+      <div class="fmt-card"><span class="fmt-ext">.csv</span><div><b>CSV</b><span>城市：天际线 · 王国风云2</span></div></div>
+      <div class="fmt-card"><span class="fmt-ext">.ini</span><div><b>INI / properties</b><span>异星工厂 · 大量老游戏配置</span></div></div>
+      <div class="fmt-card"><span class="fmt-ext">.txt</span><div><b>纯文本</b><span>strings / lang / loc 等各类独立游戏文本</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 快速开始 ================= -->
+<section id="guide">
+  <div class="container">
+    <div class="sec-head">
+      <h2>快速开始</h2>
+      <p class="sec-sub">三步完成第一个 Mod 的中文化</p>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="no">1</span><h3>填写 API 设置</h3><p>填入接口地址、API Key 与模型，点"测试连接"确认可用。默认已填好 <code>DeepSeek</code> 配置。</p></div>
+      <div class="step"><span class="no">2</span><h3>选择 Mod 文件夹</h3><p>点"扫描"自动识别可翻译文件与文本条数，双击条目可勾选/取消。</p></div>
+      <div class="step"><span class="no">3</span><h3>开始翻译</h3><p>点"▶ 开始翻译"，进度实时显示；完成后到输出文件夹取用，占位符与格式码完整保留。</p></div>
+    </div>
+
+    <h3 style="margin:40px 0 6px">命令行模式（脚本化 / 批量处理）</h3>
+    <p style="color:var(--muted);font-size:13.5px">适合集成到构建流程，或对大量 Mod 定时翻译：</p>
+    <div class="cmd-block" id="cmd1">GameModTranslator.exe --cli --input D:\mods\MyMod --output D:\mods\MyMod_zh ^
+  --api-key sk-xxx --model deepseek-chat --lang 简体中文</div>
+    <div class="cmd-block" id="cmd2">GameModTranslator.exe --cli --input D:\mods\MyMod --list   :: 仅扫描
+GameModTranslator.exe --cli --input D:\mods\MyMod --inplace --api-key sk-xxx   :: 覆盖原文件(自动备份 .bak)</div>
+
+    <h3 style="margin:34px 0 6px">本地模型（免费离线）</h3>
+    <p style="color:var(--muted);font-size:13.5px">接口地址指向本地服务即可，API Key 随便填：</p>
+    <table class="tbl">
+      <tr><th>本地服务</th><th>接口地址</th><th>模型名示例</th></tr>
+      <tr><td>Ollama</td><td><code>http://localhost:11434/v1</code></td><td><code>qwen2.5:7b</code></td></tr>
+      <tr><td>LM Studio</td><td><code>http://localhost:1234/v1</code></td><td><code>界面中加载的模型</code></td></tr>
+      <tr><td>vLLM</td><td><code>http://localhost:8000/v1</code></td><td><code>Qwen/Qwen2.5-7B-Instruct</code></td></tr>
+      <tr><td>llama.cpp</td><td><code>http://localhost:8080/v1</code></td><td><code>启动时指定的模型名</code></td></tr>
+    </table>
+    <div class="note"><b>建议：</b>本地翻译质量与模型大小直接相关，推荐 7B 及以上模型（如 Qwen2.5-7B-Instruct）；小模型偶尔丢失占位符时，软件会自动重试并在日志中警告。</div>
+  </div>
+</section>
+
+<!-- ================= 下载 ================= -->
+<section id="download">
+  <div class="container">
+    <div class="sec-head">
+      <h2>下载</h2>
+      <p class="sec-sub">Windows 10/11 64 位 · 绿色免安装 · 不收集任何个人信息</p>
+    </div>
+    <div class="dl-cards">
+      <div class="dl-card">
+        <span class="hot">推荐</span>
+        <h3>📦 安装程序</h3>
+        <p class="desc">带中文向导，可自选安装目录，自动创建开始菜单与桌面快捷方式，含卸载程序。适合普通用户。</p>
+        <div class="meta"><span>GameModTranslator-Setup-1.0.exe</span><span>10.6 MB</span><span>v1.0</span></div>
+        <div class="sha">SHA256: CAC4EA3B8A546E3EC804A6DCC16ABFDBBCD9CA5AD4DBE5FF0C9E8F052AB89647</div>
+        <a class="btn btn-primary" href="downloads/GameModTranslator-Setup-1.0.exe" download>⬇ 下载安装程序</a>
+      </div>
+      <div class="dl-card">
+        <h3>🎒 绿色便携版</h3>
+        <p class="desc">单文件免安装，解压即用，配置与缓存保存在同目录，U 盘党首选。首次启动需 2~5 秒解压。</p>
+        <div class="meta"><span>GameModTranslator.exe</span><span>11.9 MB</span><span>v1.0</span></div>
+        <div class="sha">SHA256: 98B312B3922EC71F158C3D87A78E37C1629AD74C3A418596350763B612CB3976</div>
+        <a class="btn btn-ghost" href="downloads/GameModTranslator.exe" download>⬇ 下载便携版</a>
+      </div>
+    </div>
+    <p style="text-align:center;color:var(--muted);font-size:12.5px;margin-top:16px">下载后建议核对 SHA256 校验值，确保文件完整未被篡改。</p>
+  </div>
+</section>
+
+<!-- ================= 为爱发电 ================= -->
+<section id="support">
+  <div class="container">
+    <div class="sec-head">
+      <h2>为爱发电 · 支持我们</h2>
+      <p class="sec-sub">软件完全免费、无广告、无内购。如果它帮你省下了大把时间，欢迎用喜欢的方式支持作者，让项目能一直更新下去 💜</p>
+    </div>
+
+    <div class="support-grid">
+      <!-- 平台赞助卡片: 把链接填进 href 即可显示按钮; 留空则显示"即将开放" -->
+      <div class="sp-card">
+        <div class="sp-ic">💗</div>
+        <h3>爱发电</h3>
+        <p>国内创作者支持平台，小额赞赏、订阅动态、提前体验新版本</p>
+        <!-- 例: <a class="btn btn-primary btn-sm" target="_blank" rel="noopener" href="https://afdian.com/a/你的ID">前往爱发电 ↗</a> -->
+        <span class="sp-pending">即将开放</span>
+      </div>
+      <div class="sp-card">
+        <div class="sp-ic">☕</div>
+        <h3>Ko-fi</h3>
+        <p>Buy me a coffee —— 国际用户友好，一杯咖啡就是最大的鼓励</p>
+        <!-- 例: <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://ko-fi.com/你的ID">请作者喝咖啡 ↗</a> -->
+        <span class="sp-pending">即将开放</span>
+      </div>
+    </div>
+
+    <div class="qr-grid">
+      <!-- 赞赏码: 把微信/支付宝赞赏码截图保存为 website/img/qr_wechat.png、qr_alipay.png 即自动显示 -->
+      <div class="qr-card" id="qrWechat">
+        <b>微信赞赏码</b>
+        <div class="qr-ph"><span class="ph-ic">🧧</span><b>赞赏码待补充</b><span>作者上传二维码后自动显示</span></div>
+        <span class="hint">保存为 img/qr_wechat.png</span>
+      </div>
+      <div class="qr-card" id="qrAlipay">
+        <b>支付宝赞赏码</b>
+        <div class="qr-ph"><span class="ph-ic">🧧</span><b>赞赏码待补充</b><span>作者上传二维码后自动显示</span></div>
+        <span class="hint">保存为 img/qr_alipay.png</span>
+      </div>
+    </div>
+
+    <div class="support-free">
+      <h3>不花钱也能支持 ✨</h3>
+      <div class="free-items">
+        <span class="free-chip">⭐ 向朋友推荐这个工具</span>
+        <span class="free-chip">📣 在社区/论坛分享使用体验</span>
+        <span class="free-chip">🐛 反馈 Bug 与翻译问题</span>
+        <span class="free-chip">💬 提出功能建议</span>
+        <span class="free-chip">🌍 帮忙校对翻译质量</span>
+      </div>
+    </div>
+
+    <div class="note"><b>说明：</b>所有赞赏将用于服务器、API 额度与持续开发。软件永远免费，赞赏全凭心意，感谢每一位支持者！</div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section id="faq">
+  <div class="container" style="max-width:800px">
+    <div class="sec-head">
+      <h2>常见问题</h2>
+      <p class="sec-sub">还没有解答你的问题？欢迎反馈</p>
+    </div>
+
+    <div class="faq-item open">
+      <button class="faq-q">支持哪些游戏？<span class="ar">▾</span></button>
+      <div class="faq-a">按文件格式通用支持：群星、环世界、我的世界、十字军之王3、维多利亚3、欧陆风云4、城市：天际线、异星工厂、泰拉瑞亚、博德之门3 以及大量使用 JSON/YAML/XML/CSV/INI/TXT 文本的独立游戏。只要能定位到文本文件，就能翻译。</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">用什么 AI？要钱吗？<span class="ar">▾</span></button>
+      <div class="faq-a">任意 OpenAI 兼容接口：DeepSeek（便宜）、OpenAI、Kimi、通义千问、智谱，或完全免费的本地模型（Ollama 等）。费用由你选择的 API 服务商决定；翻译缓存保证相同文本不重复扣费。</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">会不会把 {0}、%s 这类格式码翻译坏？<span class="ar">▾</span></button>
+      <div class="faq-a">不会。翻译前会把 <code>{0}</code>、<code>%s</code>、<code>$KEY$</code>、<code>§R..§!</code>、<code>&lt;b&gt;</code>、<code>[Root.X]</code> 等全部替换为哨兵标记，翻译后再还原；若 AI 弄丢标记，软件会自动重试一次并在日志中警告。</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">翻译结果保存在哪里？<span class="ar">▾</span></button>
+      <div class="faq-a">默认输出到"翻译输出"文件夹，目录结构与原 Mod 一致，直接复制回游戏目录即可；也可选择"覆盖原文件"模式，软件会先自动生成 <code>.bak</code> 备份。</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">杀毒软件报毒怎么办？<span class="ar">▾</span></button>
+      <div class="faq-a">软件未做代码签名，PyInstaller 打包的程序偶尔会被误报。添加信任即可；若仍无法运行，请使用绿色便携版或安装版（安装版走系统安装流程，兼容性更好）。</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">缓存文件在哪？删了会怎样？<span class="ar">▾</span></button>
+      <div class="faq-a">缓存 <code>cache.json</code> 与配置 <code>config.json</code> 保存在程序同目录（安装版在安装目录）。删除缓存只会导致已翻译文本重新请求 API，无其他影响。</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">翻译质量如何保证？<span class="ar">▾</span></button>
+      <div class="faq-a">内置专业游戏本地化提示词：保留专有名词与术语、保持游戏语气、禁止解释性输出；每条文本附带文件路径与键名上下文。可自定义额外提示词，也可调低温度让翻译更稳定。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 更新日志 ================= -->
+<section id="changelog">
+  <div class="container">
+    <div class="sec-head"><h2>更新日志</h2><p class="sec-sub">保持更新，持续打磨</p></div>
+    <div class="cl">
+      <h3>v1.0 <span class="badge">首发</span></h3>
+      <div class="date">2026-08-22</div>
+      <ul>
+        <li>中文图形界面：API 设置、文件扫描、进度显示、停止/继续</li>
+        <li>支持 JSON / YAML / XML / Paradox YML / CSV / INI / TXT 七种格式</li>
+        <li>占位符保护机制，覆盖 {0} %s $KEY$ §R..§! &lt;b&gt; [Root.X] ^R 等格式码</li>
+        <li>翻译缓存（cache.json）+ 并发翻译 + 自动重试</li>
+        <li>支持本地模型（Ollama / LM Studio / vLLM）</li>
+        <li>输出到文件夹 / 覆盖原文件（自动 .bak 备份）双模式</li>
+        <li>命令行模式（--cli），可脚本化批量处理</li>
+        <li>编码自动识别（UTF-8 / BOM / UTF-16 / GBK），结构原样保留</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 页脚 ================= -->
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <b>游戏 Mod AI 翻译器</b>
+        <div>用 AI 让每个 Mod 都看得懂</div>
+      </div>
+      <div>
+        <b>下载</b>
+        <a href="downloads/GameModTranslator-Setup-1.0.exe" download>安装程序</a><br>
+        <a href="downloads/GameModTranslator.exe" download>绿色便携版</a>
+      </div>
+      <div>
+        <b>快速入口</b>
+        <a href="#features">功能特性</a> · <a href="#guide">快速开始</a> · <a href="#support">支持我们</a> · <a href="#faq">常见问题</a>
+      </div>
+    </div>
+    <div class="foot-note">© <span id="year"></span> GameModTranslator · 本软件与各游戏厂商无关，仅供学习交流 · 请尊重 Mod 作者版权，汉化发布前请获得授权</div>
+  </div>
+</footer>
+
+<button id="toTop" title="回到顶部">↑</button>
+
+<script>
+// 年份
+document.getElementById("year").textContent = new Date().getFullYear();
+
+// 移动端导航
+const navToggle = document.getElementById("navToggle");
+const navLinks = document.getElementById("navLinks");
+navToggle.addEventListener("click", () => navLinks.classList.toggle("open"));
+navLinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => navLinks.classList.remove("open")));
+
+// FAQ 手风琴
+document.querySelectorAll(".faq-q").forEach(q => {
+  q.addEventListener("click", () => q.parentElement.classList.toggle("open"));
+});
+
+// 代码块复制按钮
+document.querySelectorAll(".cmd-block").forEach(block => {
+  const btn = document.createElement("button");
+  btn.className = "copy-btn";
+  btn.textContent = "复制";
+  block.appendChild(btn);
+  btn.addEventListener("click", async () => {
+    try {
+      let text = block.innerText.replace(/复制$/, "").trim();
+      await navigator.clipboard.writeText(text);
+      btn.textContent = "✔ 已复制";
+      btn.classList.add("ok");
+    } catch (e) {
+      btn.textContent = "复制失败";
+    }
+    setTimeout(() => { btn.textContent = "复制"; btn.classList.remove("ok"); }, 1800);
+  });
+});
+
+// 赞赏码: 若 img/qr_wechat.png、qr_alipay.png 存在则替换占位内容
+[["qrWechat", "img/qr_wechat.png", "微信赞赏码"],
+ ["qrAlipay", "img/qr_alipay.png", "支付宝赞赏码"]].forEach(function (item) {
+  var id = item[0], src = item[1], title = item[2];
+  var el = document.getElementById(id);
+  if (!el) return;
+  var img = new Image();
+  img.onload = function () {
+    el.innerHTML = '<b>' + title + '</b><img src="' + src + '" alt="' + title + '"><span class="hint">长按 / 扫码赞赏</span>';
+  };
+  img.onerror = function () { /* 图片不存在, 保留"待补充"占位 */ };
+  img.src = src;
+});
+
+// 回到顶部
+const toTop = document.getElementById("toTop");
+window.addEventListener("scroll", () => {
+  toTop.classList.toggle("show", window.scrollY > 500);
+  // 导航高亮
+  const pos = window.scrollY + 120;
+  document.querySelectorAll("section").forEach(sec => {
+    const link = document.querySelector(`.nav-links a[href="#${sec.id}"]`);
+    if (link && pos >= sec.offsetTop && pos < sec.offsetTop + sec.offsetHeight) {
+      link.style.color = "#fff";
+    } else if (link) {
+      link.style.color = "";
+    }
+  });
+});
+toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+</script>
+</body>
+</html>
